@@ -1,7 +1,8 @@
 package stockapplication;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -20,8 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import static stockapplication.StockApplication.addStockFrame;
+import static stockapplication.StockApplication.confirmWindow;
 import static stockapplication.StockApplication.listener;
-import static stockapplication.StockApplication.warningFrame;
+import static stockapplication.StockApplication.reportOptionsFrame;
+import static stockapplication.StockApplication.stockFrame;
+import static stockapplication.StockApplication.warningWindow;
 
 public class MainFrame extends JFrame {
 
@@ -33,13 +37,55 @@ public class MainFrame extends JFrame {
         mainList.setVisibleRowCount(20);
         mainList.setPrototypeCellValue("                                                                     ");
         JScrollPane mainScrollPane = new JScrollPane(mainList);
+        mainList.addKeyListener(new KeyListener() {
+            boolean ENTERisDown = false, DELETEisDown = false, CTRNisDown = false, CTRRisDown = false;
+
+            @Override
+            public void keyTyped(KeyEvent ke) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent ke) {
+                int key = ke.getKeyCode();
+                if (key == KeyEvent.VK_ENTER) {
+                    ENTERisDown = true;
+                } else if (key == KeyEvent.VK_DELETE) {
+                    DELETEisDown = true;
+                } else if (key == KeyEvent.VK_N && ke.getModifiers() == KeyEvent.CTRL_MASK) {
+                    CTRNisDown = true;
+                } else if (key == KeyEvent.VK_R && ke.getModifiers() == KeyEvent.CTRL_MASK) {
+                    CTRRisDown = true;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent ke) {
+                int key = ke.getKeyCode();
+                if (key == KeyEvent.VK_ENTER && ENTERisDown) {
+                    stockFrame.display();
+                    ENTERisDown = false;
+                } else if (key == KeyEvent.VK_DELETE && DELETEisDown) {
+                    removeStock();
+                    DELETEisDown = false;
+                } else if (key == KeyEvent.VK_N && CTRNisDown) {
+                    addStockFrame.display(true);
+                    CTRNisDown = false;
+                } else if (key == KeyEvent.VK_R && CTRRisDown) {
+                    reportOptionsFrame.display("Full", true);
+                    CTRRisDown = false;
+                }
+            }
+        });
         mainScrollPane.setWheelScrollingEnabled(true);
         setTitle("Stock Application");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel mainPanel = new JPanel();
         JButton mainAddButton = new JButton("New Stock");
+        mainAddButton.setFocusable(false);
         JButton mainRemoveButton = new JButton("Remove Stock");
+        mainRemoveButton.setFocusable(false);
         JButton mainFunctionButton = new JButton("Edit / View Stock");
+        mainFunctionButton.setFocusable(false);
         add(mainPanel);
         mainPanel.add(mainScrollPane);
         mainPanel.add(mainAddButton);
@@ -61,90 +107,79 @@ public class MainFrame extends JFrame {
         helpMenu.add(entryHelpItem);
         mainMenuBar.add(helpMenu);
         setJMenuBar(mainMenuBar);
-        mainAddButton.addActionListener(listener);
-        mainRemoveButton.addActionListener(listener);
-        mainFunctionButton.addActionListener(listener);
-        exitItem.addActionListener(listener);
-        fullReportItem.addActionListener(listener);
-        stockHelpItem.addActionListener(listener);
-        entryHelpItem.addActionListener(listener);
+        mainAddButton.addActionListener((ActionListener) listener);
+        mainRemoveButton.addActionListener((ActionListener) listener);
+        mainFunctionButton.addActionListener((ActionListener) listener);
+        exitItem.addActionListener((ActionListener) listener);
+        fullReportItem.addActionListener((ActionListener) listener);
+        stockHelpItem.addActionListener((ActionListener) listener);
+        entryHelpItem.addActionListener((ActionListener) listener);
         pack();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation(((int) screenSize.getWidth() - getSize().width) / 2, ((int) screenSize.getHeight() - getSize().height) / 2);
+        setLocationRelativeTo(null);
         setResizable(false);
     }
 
-    public void addStock(String name, String totalStocks, String ACBTotal) {
+    public boolean addStock(String name, int totalStocks, double ACBTotal) {
         try {
             if (!mainListModel.contains(name)) {
                 if (!name.matches("")) {
-                    if (!name.contains(" ")) {
-                        if (Integer.valueOf(totalStocks) >= 0) {
-                            if (Double.valueOf(ACBTotal) >= 0) {
-                                addStockFrame.setVisible(false);
-                                mainListModel.addElement(name);
-                                sortSaveStocks();
-                                File stockFile = new File(name + ".txt");
-                                String ACBPerUnit = "0";
-                                if (Integer.valueOf(totalStocks) != 0) {
-                                    ACBPerUnit = String.valueOf(Double.valueOf(ACBTotal) / Double.valueOf(totalStocks));
-                                }
-                                try (PrintWriter stockWriter = new PrintWriter(new FileWriter(stockFile))) {
-                                    stockWriter.print("- - - - - - - - " + totalStocks + " " + ACBPerUnit + " " + ACBTotal + " - ");
-                                }
-                            } else {
-                                warningFrame.displayWarning("\"Adjusted Cost Base (total)\" must be positive!");
-                            }
-                        } else {
-                            warningFrame.displayWarning("\"Num Of Existing Stocks\" must be positive!");
-                        }
-                    } else {
-                        warningFrame.displayWarning("\"Stock Symbol\" cannot contain spaces!");
+                    mainListModel.addElement(name);
+                    sortSaveStocks();
+                    File stockFile = new File(name + ".txt");
+                    double ACBPerUnit = 0;
+                    if (totalStocks != 0) {
+                        ACBPerUnit = ACBTotal / totalStocks;
                     }
+                    try (PrintWriter stockWriter = new PrintWriter(new FileWriter(stockFile))) {
+                        stockWriter.print("- - - - - - - - " + totalStocks + " " + ACBPerUnit + " " + ACBTotal + " - ");
+                    }
+                    mainList.setSelectedValue(name, true);
+                    return true;
                 } else {
-                    warningFrame.displayWarning("You must provide the Stock Symbol!");
+                    warningWindow.displayWarning("You must provide the Stock Symbol!", 0);
                 }
             } else {
-                warningFrame.displayWarning("You cannot enter this stock again!");
-            }
-        } catch (NumberFormatException ex) {
-            if (ex.toString().contains("empty String") || ex.toString().contains("For input string: \"\"")) {
-                warningFrame.displayWarning("Empty Entry(s)...Please Check All Fields!");
-            } else if (ex.toString().contains("multiple points")) {
-                warningFrame.displayWarning("Entries can only contain one decimal point!");
-            } else if (ex.toString().contains("For input string:")) {
-                warningFrame.displayWarning("Invalid Character(s)... [" + ex.toString().substring(52, ex.toString().length() - 1) + "]  ...Please Review your Entries!");
-            } else {
-                warningFrame.displayWarning("Unknown error.  Please review your entries!");
+                warningWindow.displayWarning("You cannot enter this stock again!", 0);
             }
         } catch (IOException ex) {
         }
+        return false;
     }
 
     public void removeStock() {
         try {
             if (mainList.getSelectedIndex() >= 0) {
-                String name = mainList.getSelectedValue().toString();
-                mainListModel.removeElementAt(mainList.getSelectedIndex());
-                sortSaveStocks();
-                File oldFile = new File(name + ".txt");
-                File newFile = new File("trash/" + name + "(trash).txt");
-                int nameShifter = 0;
-                while (newFile.isFile()) {
-                    newFile = new File("trash/" + name + String.valueOf(nameShifter) + "(trash).txt");
-                    nameShifter++;
-                }
-                PrintWriter stockWriter;
-                try (BufferedReader stockReader = new BufferedReader(new FileReader(oldFile))) {
-                    stockWriter = new PrintWriter(new FileWriter(newFile));
-                    while (stockReader.ready()) {
-                        stockWriter.println(stockReader.readLine());
+                if (confirmWindow.displayConfirmation("Are you sure you would like to remove the stock \"" + mainList.getSelectedValue() + "\"")) {
+                    int index = mainList.getSelectedIndex();
+                    String name = mainList.getSelectedValue().toString();
+                    mainListModel.removeElementAt(index);
+                    sortSaveStocks();
+                    if (index >= mainListModel.size()) {
+                        index--;
                     }
+                    mainList.setSelectedIndex(index);
+                    File trash = new File("trash");
+                    if (!trash.exists()) {
+                        trash.mkdir();
+                    }
+                    File oldFile = new File(name + ".txt");
+                    File newFile = new File("trash/" + name + "(trash).txt");
+                    int nameShifter = 0;
+                    while (newFile.isFile()) {
+                        newFile = new File("trash/" + name + String.valueOf(nameShifter++) + "(trash).txt");
+                    }
+                    PrintWriter stockWriter;
+                    try (BufferedReader stockReader = new BufferedReader(new FileReader(oldFile))) {
+                        stockWriter = new PrintWriter(new FileWriter(newFile));
+                        while (stockReader.ready()) {
+                            stockWriter.println(stockReader.readLine());
+                        }
+                    }
+                    stockWriter.close();
+                    oldFile.delete();
                 }
-                stockWriter.close();
-                oldFile.delete();
             } else {
-                warningFrame.displayWarning("You have not selected anything!");
+                warningWindow.displayWarning("You have not selected anything!", 0);
             }
         } catch (IOException ex) {
         }

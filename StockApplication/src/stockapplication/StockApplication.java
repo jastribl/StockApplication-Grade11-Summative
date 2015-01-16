@@ -15,10 +15,11 @@ public class StockApplication implements ActionListener {
     public static MainFrame mainFrame = new MainFrame();
     public static StockFrame stockFrame = new StockFrame();
     public static AddStockFrame addStockFrame = new AddStockFrame();
-    private static final AddEntryFrame addEntryFrame = new AddEntryFrame();
+    public static final AddEntryFrame addEntryFrame = new AddEntryFrame();
     public static EditStartingValuesFrame editStartingValuesFrame = new EditStartingValuesFrame();
-    public static WarningFrame warningFrame = new WarningFrame();
-    private static final ReportFrame reportFrame = new ReportFrame();
+    public static WarningWindow warningWindow = new WarningWindow();
+    public static ConfirmWindow confirmWindow = new ConfirmWindow();
+    public static final ReportFrame reportFrame = new ReportFrame();
     public static ReportOptionsFrame reportOptionsFrame = new ReportOptionsFrame();
     private static final HelpFrame helpFrame = new HelpFrame();
 
@@ -42,7 +43,7 @@ public class StockApplication implements ActionListener {
         String buttonName = e.getActionCommand();
         switch (buttonName) {
             case "New Stock":
-                addStockFrame.display();
+                addStockFrame.display(true);
                 break;
             case "Remove Stock":
                 mainFrame.removeStock();
@@ -59,41 +60,14 @@ public class StockApplication implements ActionListener {
             case "Edit / View Entry":
                 addEntryFrame.display("Edit / View Entry");
                 break;
-            case "Add Stock":
-                mainFrame.addStock(addStockFrame.addStockField.getText().toUpperCase(), addStockFrame.addStockNumField.getText(), addStockFrame.addStockAdjCostBaseField.getText());
-                break;
-            case "Add Entry":
-                addEntryFrame.checkAddEditEntrys("add");
-                break;
-            case "Edit Entry":
-                addEntryFrame.checkAddEditEntrys("edit");
-                break;
-            case "Apply":
-                editStartingValuesFrame.editStartingValues();
-                break;
-            case "OK":
-                warningFrame.setVisible(false);
-                break;
             case "Exit":
                 System.exit(0);
                 break;
             case "Full Report":
-                reportOptionsFrame.display("Full");
+                reportOptionsFrame.display("Full", true);
                 break;
             case "Report This Stock":
-                reportOptionsFrame.display("Stock");
-                break;
-            case "Get Full - All":
-                reportFrame.reportAll("all");
-                break;
-            case "Get Full - Range":
-                reportFrame.reportAll("range");
-                break;
-            case "Get Stock - All":
-                reportFrame.reportOne("all");
-                break;
-            case "Get Stock - Range":
-                reportFrame.reportOne("range");
+                reportOptionsFrame.display("Stock", true);
                 break;
             case "Print":
                 reportFrame.print();
@@ -105,7 +79,7 @@ public class StockApplication implements ActionListener {
                 helpFrame.display(buttonName, "ENTRY HELP\n\nFrom the individual stock screen, you can:\n\t--Add an entry via the \"New Entry\" button\n\t--Remove an entry via the \"Remove Entry\" button\n\t--View editable fields for the selected entry via the \"Edit / View Entry\" button\n\t--View an individual stock report ranging from:\n\t\t--All dates\n\t\t--A Date Range selected by you\n\n\t--Get help via:\n\t\t--Help\"Stock Help\"\n\t\t--Help\"Entry Help\"\n\n\tWhile creating a new entry or creating an individual Capital gains report, if any of your entries are entered incorrectly, you will be prompted with errors / suggestions regarding the problem. Some errors will not let you proceed with your entry, while others may allow you to proceed with your entry but will advise you to change your entry.\n\nNote  -  ACB  Adjusted Cost Base ");
                 break;
             default:
-                warningFrame.displayWarning("Unsupported Button!  Consult the programmer.");
+                warningWindow.displayWarning("Unsupported Button!  Consult the programmer.", 0);
                 break;
         }
     }
