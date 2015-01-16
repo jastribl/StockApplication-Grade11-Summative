@@ -1,15 +1,9 @@
 package stockapplication;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,10 +16,11 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import static stockapplication.StockApplication.addStockFrame;
 import static stockapplication.StockApplication.confirmWindow;
-import static stockapplication.StockApplication.listener;
 import static stockapplication.StockApplication.reportOptionsFrame;
 import static stockapplication.StockApplication.stockFrame;
+import static stockapplication.StockApplication.stocks;
 import static stockapplication.StockApplication.warningWindow;
+import static stockapplication.StockApplication.helpFrame;
 
 public class MainFrame extends JFrame {
 
@@ -62,7 +57,7 @@ public class MainFrame extends JFrame {
             public void keyReleased(KeyEvent ke) {
                 int key = ke.getKeyCode();
                 if (key == KeyEvent.VK_ENTER && ENTERisDown) {
-                    stockFrame.display();
+                    stockFrame.display(mainList.getSelectedIndex());
                     ENTERisDown = false;
                 } else if (key == KeyEvent.VK_DELETE && DELETEisDown) {
                     removeStock();
@@ -102,102 +97,98 @@ public class MainFrame extends JFrame {
         mainMenuBar.add(reportMenu);
         JMenu helpMenu = new JMenu("Help");
         JMenuItem stockHelpItem = new JMenuItem("Stock Help");
-        JMenuItem entryHelpItem = new JMenuItem("Entry Help");
         helpMenu.add(stockHelpItem);
-        helpMenu.add(entryHelpItem);
         mainMenuBar.add(helpMenu);
         setJMenuBar(mainMenuBar);
-        mainAddButton.addActionListener((ActionListener) listener);
-        mainRemoveButton.addActionListener((ActionListener) listener);
-        mainFunctionButton.addActionListener((ActionListener) listener);
-        exitItem.addActionListener((ActionListener) listener);
-        fullReportItem.addActionListener((ActionListener) listener);
-        stockHelpItem.addActionListener((ActionListener) listener);
-        entryHelpItem.addActionListener((ActionListener) listener);
+        mainAddButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                addStockFrame.display(true);
+            }
+        });
+        mainRemoveButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                removeStock();
+            }
+        });
+        mainFunctionButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                stockFrame.display(mainList.getSelectedIndex());
+            }
+        });
+        exitItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                System.exit(0);
+            }
+        });
+        fullReportItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                reportOptionsFrame.display("Full", true);
+            }
+        });
+        stockHelpItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                helpFrame.display(0);
+            }
+        });
         pack();
         setLocationRelativeTo(null);
         setResizable(false);
     }
 
+    public final void display() {
+        refreshMainFrame();
+        setVisible(true);
+    }
+
+    private void refreshMainFrame() {
+        mainListModel.clear();
+        for (Stock stock : stocks) {
+            mainListModel.addElement(stock.getName());
+        }
+    }
+
     public boolean addStock(String name, int totalStocks, double ACBTotal) {
-        try {
-            if (!mainListModel.contains(name)) {
-                if (!name.matches("")) {
-                    mainListModel.addElement(name);
-                    sortSaveStocks();
-                    File stockFile = new File(name + ".txt");
-                    double ACBPerUnit = 0;
-                    if (totalStocks != 0) {
-                        ACBPerUnit = ACBTotal / totalStocks;
-                    }
-                    try (PrintWriter stockWriter = new PrintWriter(new FileWriter(stockFile))) {
-                        stockWriter.print("- - - - - - - - " + totalStocks + " " + ACBPerUnit + " " + ACBTotal + " - ");
-                    }
-                    mainList.setSelectedValue(name, true);
-                    return true;
-                } else {
-                    warningWindow.displayWarning("You must provide the Stock Symbol!", 0);
-                }
+        if (!mainListModel.contains(name)) {
+            if (!name.matches("")) {
+                stocks.addStock(new Stock(name, totalStocks, ACBTotal));
+                refreshMainFrame();
+                mainList.setSelectedValue(name, true);
+                return true;
             } else {
-                warningWindow.displayWarning("You cannot enter this stock again!", 0);
+                warningWindow.displayWarning("You must provide the Stock Symbol!");
             }
-        } catch (IOException ex) {
+        } else {
+            warningWindow.displayWarning("You cannot enter this stock again!");
         }
         return false;
     }
 
     public void removeStock() {
-        try {
-            if (mainList.getSelectedIndex() >= 0) {
-                if (confirmWindow.displayConfirmation("Are you sure you would like to remove the stock \"" + mainList.getSelectedValue() + "\"")) {
-                    int index = mainList.getSelectedIndex();
-                    String name = mainList.getSelectedValue().toString();
-                    mainListModel.removeElementAt(index);
-                    sortSaveStocks();
-                    if (index >= mainListModel.size()) {
-                        index--;
-                    }
-                    mainList.setSelectedIndex(index);
-                    File trash = new File("trash");
-                    if (!trash.exists()) {
-                        trash.mkdir();
-                    }
-                    File oldFile = new File(name + ".txt");
-                    File newFile = new File("trash/" + name + "(trash).txt");
-                    int nameShifter = 0;
-                    while (newFile.isFile()) {
-                        newFile = new File("trash/" + name + String.valueOf(nameShifter++) + "(trash).txt");
-                    }
-                    PrintWriter stockWriter;
-                    try (BufferedReader stockReader = new BufferedReader(new FileReader(oldFile))) {
-                        stockWriter = new PrintWriter(new FileWriter(newFile));
-                        while (stockReader.ready()) {
-                            stockWriter.println(stockReader.readLine());
-                        }
-                    }
-                    stockWriter.close();
-                    oldFile.delete();
+        if (mainList.getSelectedIndex() >= 0) {
+            String name = mainList.getSelectedValue().toString();
+            if (confirmWindow.displayConfirmation("Are you sure you would like to remove the stock \"" + name + "\"")) {
+                int index = mainList.getSelectedIndex();
+                mainListModel.removeElementAt(index);
+                stocks.removeStockAt(index);
+                if (index >= mainListModel.size()) {
+                    index--;
                 }
-            } else {
-                warningWindow.displayWarning("You have not selected anything!", 0);
+                mainList.setSelectedIndex(index);
             }
-        } catch (IOException ex) {
-        }
-    }
-
-    public void sortSaveStocks() {
-        String[] allStocks = new String[mainListModel.size()];
-        for (int i = 0; i < mainListModel.size(); i++) {
-            allStocks[i] = mainListModel.elementAt(i).toString();
-        }
-        Arrays.sort(allStocks);
-        mainListModel.removeAllElements();
-        try (PrintWriter stockWriter = new PrintWriter(new FileWriter("stocks.txt"))) {
-            for (int i = 0; i < allStocks.length; i++) {
-                mainListModel.addElement(allStocks[i]);
-                stockWriter.print(mainListModel.elementAt(i).toString() + "\n");
-            }
-        } catch (IOException ex) {
+        } else {
+            warningWindow.displayWarning("You have not selected anything!");
         }
     }
 }

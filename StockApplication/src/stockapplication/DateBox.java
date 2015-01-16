@@ -32,15 +32,27 @@ public class DateBox extends JPanel {
         }
     }
 
+    public final int getYear() {
+        return (int) dateBox[0].getSelectedItem();
+    }
+
+    public final int getMonth() {
+        return (int) dateBox[1].getSelectedItem();
+    }
+
+    public final int getDay() {
+        return (int) dateBox[2].getSelectedItem();
+    }
+
+    public final JDate getDate() {
+        return new JDate(getYear(), getMonth(), getDay());
+    }
+
     public final void setToToday() {
         JDate date = new JDate();
         setYear(date.getYear());
         setMonth(date.getMonth());
         setDay(date.getDay());
-    }
-
-    public final JDate getDate() {
-        return new JDate(getYear(), getMonth(), getDay());
     }
 
     public final void setYear(int year) {
@@ -53,17 +65,5 @@ public class DateBox extends JPanel {
 
     public final void setDay(int day) {
         dateBox[2].setSelectedItem(day);
-    }
-
-    public final int getYear() {
-        return (int) dateBox[0].getSelectedItem();
-    }
-
-    public final int getMonth() {
-        return (int) dateBox[1].getSelectedItem();
-    }
-
-    public final int getDay() {
-        return (int) dateBox[2].getSelectedItem();
     }
 }

@@ -21,21 +21,16 @@ public class ReportOptionsFrame {
 
     public void display(String option, boolean reset) {
         if (reset) {
-            JDate date = new JDate();
             startDateBox.setYear(2000);
             startDateBox.setMonth(1);
             startDateBox.setDay(1);
-            endDateBox.setYear(date.getYear());
-            endDateBox.setMonth(date.getMonth());
-            endDateBox.setDay(date.getDay());
+            endDateBox.setToToday();
         }
         if (option.equals("Full") && mainFrame.mainListModel.getSize() < 1) {
-            warningWindow.displayWarning("You must have at least one stock to view a report!", 0);
+            warningWindow.displayWarning("You must have at least one stock to view a report!");
         } else {
-            boolean good;
             if (JOptionPane.showConfirmDialog(null, reportOptionsPanel, "Captital Gains Report Options - " + option, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-                good = option.equals("Full") ? reportFrame.reportFull() : reportFrame.reportStock();
-                if (!good) {
+                if (!(option.equals("Full") ? reportFrame.reportAllStocks() : reportFrame.reportOneStock(mainFrame.mainList.getSelectedIndex()))) {
                     display(option, false);
                 }
             }

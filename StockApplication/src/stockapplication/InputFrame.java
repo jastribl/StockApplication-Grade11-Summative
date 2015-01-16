@@ -16,17 +16,21 @@ public class InputFrame {
     String title;
     JFrame hostFrame;
     Object inputFields[];
-    Object firstToFocus;
+    int firstToFocus;
 
-    public InputFrame(JPanel gPanel, JFrame gHostFrame, String gTitle, Object gInputFields[], Object gGirstToFocus) {
+    public InputFrame(JPanel gPanel, JFrame gHostFrame, String gTitle, Object gInputFields[], int gFirstToFocus) {
         panel = gPanel;
         hostFrame = gHostFrame;
         title = gTitle;
         inputFields = gInputFields;
-        firstToFocus = gGirstToFocus;
+        if (gFirstToFocus >= 0 && gFirstToFocus <= 2) {
+            firstToFocus = 0;
+        } else {
+            firstToFocus = gFirstToFocus - 2;
+        }
     }
 
-    public boolean getInput() {
+    public final boolean getInput() {
         final JOptionPane pane = new JOptionPane(panel, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION);
         pane.setValue(JOptionPane.CANCEL_OPTION);
         final JDialog dialog = new JDialog(hostFrame, title, true);
@@ -75,7 +79,7 @@ public class InputFrame {
         for (Object inputField : inputFields) {
             ((JComponent) inputField).addKeyListener(keyListener);
         }
-        ((JComponent) firstToFocus).requestFocus();
+        ((JComponent) inputFields[firstToFocus]).requestFocus();
         dialog.setVisible(true);
         return (int) pane.getValue() == JOptionPane.YES_OPTION;
     }

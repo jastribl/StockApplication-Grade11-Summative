@@ -10,8 +10,8 @@ public class AddStockFrame {
 
     private final JPanel addStockPanel = new JPanel();
     private final JTextField addStockField = new JTextField();
-    private final FormattedField addStockNumField = new FormattedField(0);
-    private final FormattedField addStockAdjCostBaseField = new FormattedField(0.0);
+    private final IntegerField addStockNumField = new IntegerField(0);
+    private final MoneyField addStockAdjCostBaseField = new MoneyField(0.0);
 
     public AddStockFrame() {
         addStockPanel.setLayout(new GridLayout(2, 4));
@@ -29,7 +29,7 @@ public class AddStockFrame {
             addStockNumField.setValue(0);
             addStockAdjCostBaseField.setValue(0.00);
         }
-        if (new InputFrame(addStockPanel, mainFrame, "New Stock", new Object[]{addStockField, addStockNumField, addStockAdjCostBaseField}, addStockField).getInput()) {
+        if (new InputFrame(addStockPanel, mainFrame, "New Stock", new Object[]{addStockField, addStockNumField, addStockAdjCostBaseField}, 0).getInput()) {
             if (!mainFrame.addStock(addStockField.getText().replaceAll(" ", "_").toUpperCase(), (int) addStockNumField.getValue(), (double) addStockAdjCostBaseField.getValue())) {
                 display(false);
             }

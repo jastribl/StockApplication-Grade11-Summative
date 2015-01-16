@@ -4,12 +4,14 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import static stockapplication.StockApplication.stockFrame;
+import static stockapplication.StockApplication.stocks;
 
 public class EditStartingValuesFrame {
 
     private final JPanel editStartingValuesPanel = new JPanel();
-    private final FormattedField editStartingNumField = new FormattedField(0);
-    private final FormattedField editStartingABCField = new FormattedField(0.0);
+    private final IntegerField editStartingNumField = new IntegerField(0);
+    private final MoneyField editStartingABCField = new MoneyField(0.0);
+    private int currentStockIndex = 0;
 
     public EditStartingValuesFrame() {
         editStartingValuesPanel.setLayout(new GridLayout(2, 2));
@@ -19,10 +21,11 @@ public class EditStartingValuesFrame {
         editStartingValuesPanel.add(editStartingABCField);
     }
 
-    public void display() {
-        editStartingNumField.setValue(Integer.valueOf(stockFrame.entriesModel.getValueAt(0, 8).toString()));
-        editStartingABCField.setValue(Double.valueOf(stockFrame.entriesModel.getValueAt(0, 10).toString()));
-        if (new InputFrame(editStartingValuesPanel, stockFrame, "Edit Starting Values", new Object[]{editStartingNumField, editStartingABCField}, editStartingNumField).getInput()) {
+    public final void display(int stockIndex) {
+        currentStockIndex = stockIndex;
+        editStartingNumField.setValue(stocks.get(currentStockIndex).getStartingNum());
+        editStartingABCField.setValue(stocks.get(currentStockIndex).getStartingACBTotal());
+        if (new InputFrame(editStartingValuesPanel, stockFrame, "Edit Starting Values", new Object[]{editStartingNumField, editStartingABCField}, 0).getInput()) {
             editStartingValues();
         }
     }
@@ -32,13 +35,7 @@ public class EditStartingValuesFrame {
         if ((int) editStartingNumField.getValue() != 0) {
             ACBPerUnit = (double) editStartingABCField.getValue() / (int) editStartingNumField.getValue();
         }
-        String all[][] = stockFrame.getNumsFromTable();
-        all[0] = new String[]{"-", "-", "-", "-", "-", "-", "-", "-", String.valueOf(editStartingNumField.getValue()), String.valueOf(ACBPerUnit), String.valueOf(editStartingABCField.getValue()), "-"};
-        stockFrame.clearStocksTable();
-        for (Object[] all1 : all) {
-            stockFrame.entriesModel.addRow(all1);
-        }
-        stockFrame.sortCalculateSaveEntries();
+        stocks.get(currentStockIndex).setStartingValues((int) editStartingNumField.getValue(), (double) editStartingABCField.getValue(), ACBPerUnit);
         stockFrame.entriesTable.setRowSelectionInterval(0, 0);
     }
 }

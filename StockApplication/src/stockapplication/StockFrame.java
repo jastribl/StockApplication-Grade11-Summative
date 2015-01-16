@@ -1,15 +1,12 @@
 package stockapplication;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -24,30 +21,33 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import static stockapplication.StockApplication.addEntryFrame;
 import static stockapplication.StockApplication.confirmWindow;
-import static stockapplication.StockApplication.listener;
 import static stockapplication.StockApplication.mainFrame;
 import static stockapplication.StockApplication.reportOptionsFrame;
-import static stockapplication.StockApplication.stockFrame;
+import static stockapplication.StockApplication.stocks;
 import static stockapplication.StockApplication.warningWindow;
+import static stockapplication.StockApplication.helpFrame;
 
 public class StockFrame extends JFrame {
 
-    private final String data[][] = {{"", "", "", "", "", "", "", "", "", "", "", ""}};
-    private final String[] headers = {"Year", "Month", "Day", "Trade #", "Buy / Sell", "Quantity", "Price", "Commission", "Total Shares", "ACB (Per Unit)", "ACB (Total)", "Capital Gains / Losses"};
-    public final DefaultTableModel entriesModel = new DefaultTableModel(data, headers) {
-        @Override
-        public Class<?> getColumnClass(int column) {
-            return getValueAt(0, column).getClass();
-        }
-
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
-    public final JTable entriesTable = new JTable(entriesModel);
+    private final DefaultTableModel entriesModel;
+    public final JTable entriesTable;
+    private int currentStockIndex = 0;
 
     public StockFrame() {
+        Object data[][] = {{"", "", "", "", "", "", "", "", "", "", "", ""}};
+        String[] headers = {"Year", "Month", "Day", "Trade #", "Buy / Sell", "Quantity", "Price", "Commission", "Total Shares", "ACB (Per Unit)", "ACB (Total)", "Capital Gains / Losses"};
+        entriesModel = new DefaultTableModel(data, headers) {
+            @Override
+            public Class<?> getColumnClass(int column) {
+                return getValueAt(0, column).getClass();
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        entriesTable = new JTable(entriesModel);
         entriesTable.setCellSelectionEnabled(false);
         entriesTable.setRowSelectionAllowed(true);
         entriesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -77,19 +77,46 @@ public class StockFrame extends JFrame {
         JMenuBar stockMenuBar = new JMenuBar();
         stockMenuBar.add(reportMenu);
         JMenu helpMenu = new JMenu("Help");
-        JMenuItem stockHelpItem = new JMenuItem("Stock Help");
         JMenuItem entryHelpItem = new JMenuItem("Entry Help");
-        helpMenu.add(stockHelpItem);
         helpMenu.add(entryHelpItem);
         stockMenuBar.add(helpMenu);
         setJMenuBar(stockMenuBar);
-        indevidualReportItem.addActionListener(listener);
         add(stockPanel);
-        stockAddButton.addActionListener(listener);
-        stockRemoveButton.addActionListener(listener);
-        stockFunctionButton.addActionListener(listener);
-        stockHelpItem.addActionListener(listener);
-        entryHelpItem.addActionListener(listener);
+        indevidualReportItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                reportOptionsFrame.display("Stock", true);
+            }
+        });
+        stockAddButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                addEntryFrame.display("New Entry");
+            }
+        });
+        stockRemoveButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                removeEntry();
+            }
+        });
+        stockFunctionButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                addEntryFrame.display("Edit / View Entry");
+            }
+        });
+        entryHelpItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                helpFrame.display(1);
+            }
+        });
         setResizable(false);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -139,139 +166,57 @@ public class StockFrame extends JFrame {
                     CTRRisDown = false;
                 } else if (key == KeyEvent.VK_ESCAPE && ESCisDown) {
                     ESCisDown = false;
-                    stockFrame.setVisible(false);
+                    setVisible(false);
                     mainFrame.setVisible(true);
                 }
             }
         });
     }
 
-    public void display() {
-        if (mainFrame.mainList.getSelectedIndex() >= 0) {
-            setTitle(mainFrame.mainList.getSelectedValue().toString());
-            clearStocksTable();
-            try (BufferedReader stockReader = new BufferedReader(new FileReader(mainFrame.mainList.getSelectedValue().toString() + ".txt"))) {
-                while (stockReader.ready()) {
-                    entriesModel.addRow(stockReader.readLine().split(" "));
-                }
-            } catch (IOException ex) {
-            }
-            pack();
-            setLocation(mainFrame.getLocation().x + ((mainFrame.getSize().width - getSize().width) / 2), mainFrame.getLocation().y + ((mainFrame.getSize().height - getSize().height) / 2));
-            mainFrame.setVisible(false);
+    public void display(int index) {
+        currentStockIndex = index;
+        if (currentStockIndex >= 0) {
+            setTitle(stocks.get(currentStockIndex).getName());
+            refreshStockFrame();
             entriesTable.setRowSelectionInterval(0, 0);
+            mainFrame.setVisible(false);
             setVisible(true);
         } else {
-            warningWindow.displayWarning("You have not selected anything!", 0);
+            warningWindow.displayWarning("You have not selected anything!");
         }
     }
 
-    public void removeEntry() {
+    public final void refreshStockFrame() {
+        clearStocksTable();
+        Stock stock = stocks.get(currentStockIndex);
+        entriesModel.addRow(new Object[]{"", "", "", "", "", "", "", "", stock.getStartingNum(), stock.getStartingACBPerUnit(), stock.getStartingACBTotal(), "",});
+        for (int i = 0; i < stock.getEntries().size(); i++) {
+            entriesModel.addRow(stock.getEntries().get(i).getValues());
+        }
+        pack();
+        setLocationRelativeTo(null);
+    }
+
+    public final void removeEntry() {
         if (entriesTable.getSelectedRow() > 0) {
             if (confirmWindow.displayConfirmation("Are you sure you would like to remove this entrie?")) {
                 int index = entriesTable.getSelectedRow();
                 entriesModel.removeRow(index);
-                sortCalculateSaveEntries();
+                stocks.get(currentStockIndex).removeEntry(index - 1);
+                refreshStockFrame();
                 if (index >= entriesTable.getRowCount()) {
                     index--;
                 }
                 entriesTable.setRowSelectionInterval(0, index);
             }
         } else if (entriesTable.getSelectedRow() < 0) {
-            warningWindow.displayWarning("You have not selected anything!", 0);
+            warningWindow.displayWarning("You have not selected anything!");
         } else {
-            warningWindow.displayWarning("You can not delete this entry!", 0);
+            warningWindow.displayWarning("You can not delete this entry!");
         }
     }
 
-    public void clearStocksTable() {
+    private void clearStocksTable() {
         entriesModel.setRowCount(0);
-    }
-
-    public void sortCalculateSaveEntries() {
-        if (entriesModel.getRowCount() > 1) {
-            String all[][] = getNumsFromTable();
-            JDate currentDate = new JDate();
-            int minYear = Integer.valueOf(all[1][0]);
-            int maxDayNum = 1;
-            for (int i = 1; i < all.length; i++) {
-                if (Integer.valueOf(all[i][0]) < minYear) {
-                    minYear = Integer.valueOf(all[i][0]);
-                }
-                if (Integer.valueOf(all[i][3]) > maxDayNum) {
-                    maxDayNum = Integer.valueOf(all[i][3]);
-                }
-            }
-            clearStocksTable();
-            entriesModel.addRow(all[0]);
-            for (int year = minYear; year <= currentDate.getYear(); year++) {
-                for (int month = 0; month <= 12; month++) {
-                    for (int day = 0; day <= 31; day++) {
-                        for (int num = 0; num <= maxDayNum; num++) {
-                            for (int entry = 1; entry < all.length; entry++) {
-                                if (all[entry][0].matches(String.valueOf(year))) {
-                                    if (all[entry][1].matches(String.valueOf(month))) {
-                                        if (all[entry][2].matches(String.valueOf(day))) {
-                                            if (all[entry][3].matches(String.valueOf(num))) {
-                                                entriesModel.addRow(all[entry]);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            all = getNumsFromTable();
-            int firstBadRow = -1;
-            for (int i = 1; i < all.length; i++) {
-                String temp = all[i][4].toUpperCase();
-                if (temp.matches("B")) {
-                    all[i][8] = String.valueOf(Integer.valueOf(all[i - 1][8]) + Integer.valueOf(all[i][5]));
-                    all[i][10] = String.valueOf(Double.valueOf(all[i - 1][10]) + (Double.valueOf(all[i][6]) * Double.valueOf(all[i][5])) + Double.valueOf(all[i][7]));
-                    all[i][9] = String.valueOf(Double.valueOf(all[i][10]) / Double.valueOf(all[i][8]));
-                } else if (temp.matches("S")) {
-                    all[i][8] = String.valueOf(Integer.valueOf(all[i - 1][8]) - Integer.valueOf(all[i][5]));
-                    if (Integer.valueOf(all[i][8]) < 0 && firstBadRow == -1) {
-                        warningWindow.displayWarning("You cannot sell stocks that you do not have.", 1);
-                        firstBadRow = i;
-                    }
-                    if (Integer.valueOf(all[i][8]) == 0) {
-                        all[i][9] = "0";
-                        all[i][10] = "0";
-                    } else {
-                        all[i][10] = String.valueOf(Double.valueOf(all[i - 1][10]) - (Double.valueOf(all[i][5]) * Double.valueOf(all[i - 1][10]) / Double.valueOf(all[i - 1][8])));
-                        all[i][9] = String.valueOf(Double.valueOf(all[i][10]) / Integer.valueOf(all[i][8]));
-                    }
-                    all[i][11] = String.valueOf(((Double.valueOf(all[i][6]) * Double.valueOf(all[i][5])) - Double.valueOf(all[i][7])) - (Double.valueOf(all[i - 1][9]) * Double.valueOf(all[i][5])));
-                }
-            }
-            clearStocksTable();
-            try (PrintWriter stockWriter = new PrintWriter(new FileWriter(getTitle() + ".txt"))) {
-                for (int i = 0; i < all.length; i++) {
-                    entriesModel.addRow(all[i]);
-                    for (int j = 0; j < 12; j++) {
-                        stockWriter.print(entriesTable.getValueAt(i, j).toString() + " ");
-                    }
-                    stockWriter.println();
-                }
-            } catch (IOException ex) {
-            }
-            if (firstBadRow != -1) {
-                entriesTable.setRowSelectionInterval(0, firstBadRow);
-                addEntryFrame.display("Edit / View Entry");
-            }
-        }
-    }
-
-    public String[][] getNumsFromTable() {
-        String[][] all = new String[entriesModel.getRowCount()][12];
-        for (int i = 0; i < all.length; i++) {
-            for (int j = 0; j < 12; j++) {
-                all[i][j] = entriesModel.getValueAt(i, j).toString();
-            }
-        }
-        return (all);
     }
 }

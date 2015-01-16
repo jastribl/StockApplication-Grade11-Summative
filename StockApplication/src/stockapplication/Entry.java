@@ -1,6 +1,6 @@
 package stockapplication;
 
-public class Entry {
+public class Entry implements Comparable {
 
     private final Object values[];
 
@@ -20,7 +20,7 @@ public class Entry {
         values[11] = 0.0;
     }
 
-    public final Object getValues() {
+    public final Object[] getValues() {
         return values;
     }
 
@@ -34,6 +34,10 @@ public class Entry {
 
     public final int getDay() {
         return (int) values[2];
+    }
+
+    public final JDate getDate() {
+        return new JDate(getYear(), getMonth(), getDay());
     }
 
     public final int getTradeNum() {
@@ -118,5 +122,27 @@ public class Entry {
 
     public final void setCapitalGain(double capitalGains) {
         values[11] = capitalGains;
+    }
+
+    @Override
+    public int compareTo(Object e) {
+        Entry entry2 = (Entry) e;
+        if (getYear() == entry2.getYear()) {
+            if (getMonth() == entry2.getMonth()) {
+                if (getDay() == entry2.getDay()) {
+                    if (getTradeNum() == entry2.getTradeNum()) {
+                        return 0;
+                    } else {
+                        return getTradeNum() > entry2.getTradeNum() ? 1 : -1;
+                    }
+                } else {
+                    return getDay() > entry2.getDay() ? 1 : -1;
+                }
+            } else {
+                return getMonth() > entry2.getMonth() ? 1 : -1;
+            }
+        } else {
+            return getYear() > entry2.getYear() ? 1 : -1;
+        }
     }
 }

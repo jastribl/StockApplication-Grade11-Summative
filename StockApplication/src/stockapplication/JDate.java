@@ -17,11 +17,11 @@ public class JDate implements Comparable {
         day = gDay;
     }
 
-    public final void setToToday() {
+    private void setToToday() {
         Calendar date = Calendar.getInstance(Locale.CANADA);
-        setYear(date.get(Calendar.YEAR));
-        setMonth(date.get(Calendar.MONTH) + 1);
-        setDay(date.get(Calendar.DAY_OF_MONTH));
+        year = date.get(Calendar.YEAR);
+        month = date.get(Calendar.MONTH) + 1;
+        day = date.get(Calendar.DAY_OF_MONTH);
     }
 
     public final int getYear() {
@@ -34,18 +34,6 @@ public class JDate implements Comparable {
 
     public final int getDay() {
         return day;
-    }
-
-    public final void setYear(int gYear) {
-        year = gYear;
-    }
-
-    public final void setMonth(int gMonth) {
-        month = gMonth;
-    }
-
-    public final void setDay(int gDay) {
-        day = gDay;
     }
 
     @Override
