@@ -3,11 +3,10 @@ package stockapplication;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.awt.print.PrinterException;
-import java.text.DecimalFormat;
+import java.text.*;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.*;
 import static stockapplication.StockApplication.mainFrame;
 import static stockapplication.StockApplication.reportOptionsFrame;
 import static stockapplication.StockApplication.stockFrame;
@@ -53,8 +52,8 @@ public class ReportFrame extends JFrame {
         quickReportTable.getTableHeader().setResizingAllowed(false);
         taxReportTable.getTableHeader().setReorderingAllowed(false);
         taxReportTable.getTableHeader().setResizingAllowed(false);
-        int quickReportWidths[] = {93, 34, 42, 31, 145}, taxReportWidths[] = {65, 45, 80, 80, 75, 75, 55, 75};
-        int quickReportTotalWidth = 0, taxReportTotalWidth = 0;;
+        int quickReportWidths[] = {93, 34, 42, 31, 145}, taxReportWidths[] = {60, 45, 80, 80, 75, 75, 55, 75};//{50, 40, 70, 70, 70, 70, 40, 70};
+        int quickReportTotalWidth = 0, taxReportTotalWidth = 0;
         for (int i = 0; i < quickReportWidths.length; i++) {
             quickReportTable.getColumnModel().getColumn(i).setMinWidth(quickReportWidths[i]);
             quickReportTotalWidth += quickReportWidths[i];
@@ -294,7 +293,9 @@ public class ReportFrame extends JFrame {
 
     public void print() {
         try {
-            quickReportTable.print();
+            MessageFormat header = new MessageFormat("Tax Report");
+            MessageFormat footer = new MessageFormat("Page - {0}");
+            taxReportTable.print(JTable.PrintMode.NORMAL,header,footer);
         } catch (PrinterException ex) {
             warningWindow.displayWarning("Printing error.  Sorry for the inconvenience!");
         }
