@@ -2,8 +2,7 @@ package stockapplication;
 
 import java.text.NumberFormat;
 import javax.swing.JFormattedTextField;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
+import javax.swing.text.*;
 
 public class IntegerField extends JFormattedTextField {
 

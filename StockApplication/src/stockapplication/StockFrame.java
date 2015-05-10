@@ -1,23 +1,8 @@
 package stockapplication;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
+import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import static stockapplication.StockApplication.addEntryFrame;
 import static stockapplication.StockApplication.confirmWindow;
@@ -86,7 +71,7 @@ public class StockFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                reportOptionsFrame.display("Stock", true);
+                reportOptionsFrame.displayForQuickCapitalGainsReport("ONE", true);
             }
         });
         stockAddButton.addActionListener(new ActionListener() {
@@ -162,7 +147,7 @@ public class StockFrame extends JFrame {
                     CTRNisDown = false;
                     addEntryFrame.display("New Entry");
                 } else if (key == KeyEvent.VK_R && CTRRisDown) {
-                    reportOptionsFrame.display("Stock", true);
+                    reportOptionsFrame.displayForQuickCapitalGainsReport("ONE", true);
                     CTRRisDown = false;
                 } else if (key == KeyEvent.VK_ESCAPE && ESCisDown) {
                     ESCisDown = false;

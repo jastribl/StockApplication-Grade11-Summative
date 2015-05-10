@@ -1,8 +1,6 @@
 package stockapplication;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import static stockapplication.StockApplication.addEntryFrame;
 import static stockapplication.StockApplication.stockFrame;
 import static stockapplication.StockApplication.stocks;
@@ -157,7 +155,6 @@ public class Stock {
             stocks.saveStocks();
             stockFrame.refreshStockFrame();
             if (firstBadRow != -1 && displayProblems) {
-                System.out.println("trying to highlight row: " + (firstBadRow + 1));
                 stockFrame.entriesTable.setRowSelectionInterval(0, firstBadRow + 1);
                 addEntryFrame.display("Edit / View Entry");
             }

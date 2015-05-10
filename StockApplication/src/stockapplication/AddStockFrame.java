@@ -1,9 +1,7 @@
 package stockapplication;
 
 import java.awt.GridLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import static stockapplication.StockApplication.mainFrame;
 
 public class AddStockFrame {

@@ -1,7 +1,6 @@
 package stockapplication;
 
-import java.util.Calendar;
-import java.util.Locale;
+import java.util.*;
 
 public class JDate implements Comparable {
 

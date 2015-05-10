@@ -1,9 +1,7 @@
 package stockapplication;
 
 import java.awt.GridLayout;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import static stockapplication.StockApplication.editStartingValuesFrame;
 import static stockapplication.StockApplication.mainFrame;
 import static stockapplication.StockApplication.stockFrame;

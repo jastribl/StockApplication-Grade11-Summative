@@ -2,8 +2,7 @@ package stockapplication;
 
 import java.awt.GridLayout;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class DateBox extends JPanel {
 

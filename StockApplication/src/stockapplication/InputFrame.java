@@ -1,14 +1,8 @@
 package stockapplication;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import java.awt.event.*;
+import java.beans.*;
+import javax.swing.*;
 
 public class InputFrame {
 

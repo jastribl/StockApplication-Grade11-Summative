@@ -1,19 +1,7 @@
 package stockapplication;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
+import java.awt.event.*;
+import javax.swing.*;
 import static stockapplication.StockApplication.addStockFrame;
 import static stockapplication.StockApplication.confirmWindow;
 import static stockapplication.StockApplication.reportOptionsFrame;
@@ -66,7 +54,7 @@ public class MainFrame extends JFrame {
                     addStockFrame.display(true);
                     CTRNisDown = false;
                 } else if (key == KeyEvent.VK_R && CTRRisDown) {
-                    reportOptionsFrame.display("Full", true);
+                    reportOptionsFrame.displayForQuickCapitalGainsReport("ALL", true);
                     CTRRisDown = false;
                 }
             }
@@ -93,7 +81,9 @@ public class MainFrame extends JFrame {
         mainMenuBar.add(fileMenu);
         JMenu reportMenu = new JMenu("Reports");
         JMenuItem fullReportItem = new JMenuItem("Full Report");
+        JMenuItem taxReportItem = new JMenuItem("Tax Report");
         reportMenu.add(fullReportItem);
+        reportMenu.add(taxReportItem);
         mainMenuBar.add(reportMenu);
         JMenu helpMenu = new JMenu("Help");
         JMenuItem stockHelpItem = new JMenuItem("Stock Help");
@@ -132,7 +122,14 @@ public class MainFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                reportOptionsFrame.display("Full", true);
+                reportOptionsFrame.displayForQuickCapitalGainsReport("ALL", true);
+            }
+        });
+        taxReportItem.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                reportOptionsFrame.displayForTaxReport(true);
             }
         });
         stockHelpItem.addActionListener(new ActionListener() {

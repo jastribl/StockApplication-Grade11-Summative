@@ -3,8 +3,7 @@ package stockapplication;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.JFormattedTextField;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
+import javax.swing.text.*;
 
 public class MoneyField extends JFormattedTextField {
 

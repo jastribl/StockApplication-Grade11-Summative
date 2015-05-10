@@ -1,14 +1,7 @@
 package stockapplication;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.io.*;
+import java.util.*;
 
 public class Stocks extends ArrayList<Stock> {
 
