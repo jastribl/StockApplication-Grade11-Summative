@@ -54,4 +54,20 @@ public class JDate implements Comparable {
             return year > tY ? 1 : -1;
         }
     }
+
+    @Override
+    public final String toString() {
+        String y = String.valueOf(getYear()), m, d;
+        if (getMonth() >= 10) {
+            m = String.valueOf(getMonth());
+        } else {
+            m = "0" + String.valueOf(getMonth());
+        }
+        if (getDay() >= 10) {
+            d = String.valueOf(getDay());
+        } else {
+            d = "0" + String.valueOf(getDay());
+        }
+        return y + "-" + m + "-" + d;
+    }
 }

@@ -24,7 +24,7 @@ public class ReportFrame extends JFrame {
             return false;
         }
     };
-    private final DefaultTableModel taxReportModel = new DefaultTableModel(new String[]{"Number", "Name", "Year", "Proceeds", "ACB", "Outlays", "Gain / Loss"}, 0) {
+    private final DefaultTableModel taxReportModel = new DefaultTableModel(new String[]{"Number", "Name", "Bought", "Sold", "Proceeds", "ACB", "Outlays", "Gain / Loss"}, 0) {
 
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -37,12 +37,14 @@ public class ReportFrame extends JFrame {
     public ReportFrame() {
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-        taxReportTable.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
         taxReportTable.getColumnModel().getColumn(4).setCellRenderer(rightRenderer);
         taxReportTable.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
         taxReportTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
+        taxReportTable.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        taxReportTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        taxReportTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
         quickReportTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
         quickReportTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
         quickReportTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
@@ -51,7 +53,7 @@ public class ReportFrame extends JFrame {
         quickReportTable.getTableHeader().setResizingAllowed(false);
         taxReportTable.getTableHeader().setReorderingAllowed(false);
         taxReportTable.getTableHeader().setResizingAllowed(false);
-        int quickReportWidths[] = {93, 34, 42, 31, 145}, taxReportWidths[] = {65, 45, 45, 75, 75, 55, 75};
+        int quickReportWidths[] = {93, 34, 42, 31, 145}, taxReportWidths[] = {65, 45, 80, 80, 75, 75, 55, 75};
         int quickReportTotalWidth = 0, taxReportTotalWidth = 0;;
         for (int i = 0; i < quickReportWidths.length; i++) {
             quickReportTable.getColumnModel().getColumn(i).setMinWidth(quickReportWidths[i]);
@@ -215,13 +217,12 @@ public class ReportFrame extends JFrame {
         DecimalFormat money = new DecimalFormat("$#,##0.00;$-#,##0.00");
         Double totalCapitalGains = 0.0;
         for (Stock stock : stocks) {
-            ArrayList<int[]> years = new ArrayList();
+            ArrayList<ArrayList> records = new ArrayList();
             boolean foundFirstBuy = false;
             for (int j = 0; j < stock.getEntries().size(); j++) {
                 Entry entry = stock.getEntries().get(j);
-                JDate tempDate = new JDate(entry.getYear(), entry.getMonth(), entry.getDay());
                 if (entry.getBS() == 'S') {
-                    if (tempDate.compareTo(startDate) >= 0 && tempDate.compareTo(endDate) <= 0) {
+                    if (entry.getDate().compareTo(startDate) >= 0 && entry.getDate().compareTo(endDate) <= 0) {
                         double acb;
                         if (j == 0) {
                             acb = stock.getStartingACBPerUnit();
@@ -229,51 +230,54 @@ public class ReportFrame extends JFrame {
                             acb = stock.getEntries().get(j - 1).getACBIndevidual();
                         }
                         acb *= entry.getQuantity();
-                        int yearBought = -1;
+                        JDate dateBought = new JDate();
                         int amount = entry.getQuantity();
                         if (foundFirstBuy) {
-                            yearBought = years.get(0)[0];
-                            for (int[] year : years) {
-                                if (year[1] > amount) {
-                                    year[1] -= amount;
+                            dateBought = (JDate) records.get(0).get(0);
+                            for (int i = 0; i < records.size(); i++) {
+                                if ((int) records.get(i).get(1) > amount) {
+                                    records.get(i).set(1, (int) records.get(i).get(1) - amount);
                                     break;
-                                } else if (year[1] == amount) {
-                                    years.remove(0);
+                                } else if ((int) records.get(i).get(1) == amount) {
+                                    records.remove(0);
                                     break;
                                 } else {
-                                    amount -= year[1];
-                                    years.remove(0);
+                                    amount -= (int) records.get(i).get(1);
+                                    records.remove(0);
+                                    i--;
                                 }
                             }
                         }
-                        taxReportModel.addRow(new Object[]{entry.getQuantity(), stock.getName(), (yearBought > 0 ? yearBought : "????"), money.format(entry.getQuantity() * entry.getPrice()), money.format(acb), money.format(entry.getCommission()), money.format(entry.getCapitalGain())});
+                        taxReportModel.addRow(new Object[]{entry.getQuantity(), stock.getName(), dateBought, entry.getDate().toString(), money.format(entry.getQuantity() * entry.getPrice()), money.format(acb), money.format(entry.getCommission()), money.format(entry.getCapitalGain())});
                         totalCapitalGains += entry.getCapitalGain();
-                    } else if (tempDate.compareTo(endDate) <= 0) {
-                        if (entry.getTotalQuantity() == 0) {
-                            years.clear();
-                        }
+
+                    }
+                    if (entry.getTotalQuantity() == 0) {
+                        records.clear();
                     }
                 } else if (entry.getBS() == 'B') {
                     if (!foundFirstBuy) {
                         foundFirstBuy = true;
                     }
                     boolean found = false;
-                    for (int[] year : years) {
-                        if (year[0] == entry.getYear()) {
-                            year[1] += entry.getQuantity();
+                    for (ArrayList record : records) {
+                        if (((JDate) record.get(0)).compareTo(entry.getDate()) == 0) {
+                            record.set(1, (int) record.get(1) + entry.getQuantity());
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        int newSet[] = {entry.getYear(), entry.getQuantity()};
-                        years.add(newSet);
+                        ArrayList newSet = new ArrayList();
+                        newSet.add((JDate) entry.getDate());
+                        newSet.add((int) entry.getQuantity());
+                        records.add(newSet);
                     }
                 }
             }
         }
         taxReportModel.addRow(new String[]{});
-        taxReportModel.addRow(new String[]{null, null, null, null, null, "Total: ", money.format(totalCapitalGains)});
+        taxReportModel.addRow(new String[]{null, null, null, null, null, null, "Total: ", money.format(totalCapitalGains)});
         taxReportModel.addRow(new String[]{});
         mainFrame.setVisible(false);
         display(false, "TAX");
