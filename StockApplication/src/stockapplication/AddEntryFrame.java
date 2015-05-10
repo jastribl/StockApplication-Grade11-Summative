@@ -63,7 +63,7 @@ public class AddEntryFrame {
                 priceBox.setValue(entry.getPrice());
                 commissionBox.setValue(entry.getCommission());
             }
-            if (new InputFrame(addEntryPanel, stockFrame, title, new Object[]{dateBox, tradeNumBox, BSBox, quantityBox, priceBox, commissionBox}, 3).getInput()) {
+            if (new InputFrame(addEntryPanel, stockFrame, title, new Object[]{dateBox, tradeNumBox, BSBox, quantityBox, priceBox, commissionBox}, 0).getInput()) {
                 for (int i = 0; i < stocks.get(currentStockIndex).getEntries().size(); i++) {
                     Entry entry = stocks.get(currentStockIndex).getEntries().get(i);
                     if (entry.getYear() == dateBox.getYear() && entry.getMonth() == dateBox.getMonth() && entry.getDay() == dateBox.getDay() && entry.getTradeNum() == (int) tradeNumBox.getValue() && ((title.equals("Edit / View Entry") && i != currentEntrieIndex) || title.equals("New Entry"))) {

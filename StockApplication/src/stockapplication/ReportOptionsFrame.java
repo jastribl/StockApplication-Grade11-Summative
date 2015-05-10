@@ -1,9 +1,9 @@
 package stockapplication;
 
-import java.awt.GridLayout;
 import javax.swing.*;
 import static stockapplication.StockApplication.mainFrame;
 import static stockapplication.StockApplication.reportFrame;
+import static stockapplication.StockApplication.stockFrame;
 import static stockapplication.StockApplication.warningWindow;
 
 public class ReportOptionsFrame {
@@ -18,7 +18,7 @@ public class ReportOptionsFrame {
         startDateBox = new DateBox();
         endDateBox = new DateBox();
         yearBox = new JComboBox();
-        for (int i = 2000; i <= new JDate().getYear() + 1; i++) {
+        for (int i = 2011; i <= new JDate().getYear(); i++) {
             yearBox.addItem(i);
         }
     }
@@ -29,7 +29,7 @@ public class ReportOptionsFrame {
         reportOptionsPanel.add(new JLabel("          to          "));
         reportOptionsPanel.add(endDateBox);
         if (resetFields) {
-            startDateBox.setYear(2000);
+            startDateBox.setYear(2011);
             startDateBox.setMonth(1);
             startDateBox.setDay(1);
             endDateBox.setToToday();
@@ -37,7 +37,7 @@ public class ReportOptionsFrame {
         if (stocksToDo.equals("ALL") && mainFrame.mainListModel.getSize() < 1) {
             warningWindow.displayWarning("You must have at least one stock to view a report!");
         } else {
-            if (JOptionPane.showConfirmDialog(null, reportOptionsPanel, "Quick Captital Gains Report Options - " + stocksToDo, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            if (new InputFrame(reportOptionsPanel, stocksToDo.equals("ALL") ? mainFrame : stockFrame, "Quick Captital Gains Report Options - " + stocksToDo, new Object[]{startDateBox, endDateBox, new JLabel("          to          ")}, 0).getInput()) {
                 if (!(stocksToDo.equals("ALL") ? reportFrame.quickReport("ALL", 0) : reportFrame.quickReport("ONE", mainFrame.mainList.getSelectedIndex()))) {
                     displayForQuickCapitalGainsReport(stocksToDo, false);
                 }
@@ -49,12 +49,12 @@ public class ReportOptionsFrame {
         reportOptionsPanel.removeAll();
         reportOptionsPanel.add(yearBox);
         if (resetFields) {
-            yearBox.setSelectedItem(2000);
+            yearBox.setSelectedItem(new JDate().getYear());
         }
         if (mainFrame.mainListModel.getSize() < 1) {
             warningWindow.displayWarning("You must have at least one stock to view a report!");
         } else {
-            if (JOptionPane.showConfirmDialog(null, reportOptionsPanel, "Tax Report Options", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            if (new InputFrame(reportOptionsPanel, mainFrame, "Tax Report Options", new Object[]{yearBox}, 0).getInput()) {
                 reportFrame.taxReport();
             }
         }

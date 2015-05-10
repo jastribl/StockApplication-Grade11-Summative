@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import static stockapplication.StockApplication.mainFrame;
 import static stockapplication.StockApplication.reportOptionsFrame;
 import static stockapplication.StockApplication.stockFrame;
@@ -34,6 +35,18 @@ public class ReportFrame extends JFrame {
     public final JTable taxReportTable = new JTable(taxReportModel);
 
     public ReportFrame() {
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+        taxReportTable.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
+        taxReportTable.getColumnModel().getColumn(4).setCellRenderer(rightRenderer);
+        taxReportTable.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
+        taxReportTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        quickReportTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        quickReportTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        quickReportTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        taxReportTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
         quickReportTable.getTableHeader().setReorderingAllowed(false);
         quickReportTable.getTableHeader().setResizingAllowed(false);
         taxReportTable.getTableHeader().setReorderingAllowed(false);

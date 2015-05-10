@@ -6,22 +6,18 @@ import javax.swing.*;
 
 public class InputFrame {
 
-    JPanel panel;
-    String title;
-    JFrame hostFrame;
-    Object inputFields[];
-    int firstToFocus;
+    private final JPanel panel;
+    private final String title;
+    private final JFrame hostFrame;
+    private final Object inputFields[];
+    private final int firstToFocus;
 
     public InputFrame(JPanel gPanel, JFrame gHostFrame, String gTitle, Object gInputFields[], int gFirstToFocus) {
         panel = gPanel;
         hostFrame = gHostFrame;
         title = gTitle;
         inputFields = gInputFields;
-        if (gFirstToFocus >= 0 && gFirstToFocus <= 2) {
-            firstToFocus = 0;
-        } else {
-            firstToFocus = gFirstToFocus - 2;
-        }
+        firstToFocus = gFirstToFocus;
     }
 
     public final boolean getInput() {
@@ -73,7 +69,11 @@ public class InputFrame {
         for (Object inputField : inputFields) {
             ((JComponent) inputField).addKeyListener(keyListener);
         }
-        ((JComponent) inputFields[firstToFocus]).requestFocus();
+        if (((JComponent) inputFields[firstToFocus]) instanceof DateBox) {
+            ((DateBox) inputFields[firstToFocus]).getYearBox().requestFocus();
+        } else {
+            ((JComponent) inputFields[firstToFocus]).requestFocus();
+        }
         dialog.setVisible(true);
         return (int) pane.getValue() == JOptionPane.YES_OPTION;
     }

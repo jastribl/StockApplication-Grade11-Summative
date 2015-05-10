@@ -20,7 +20,7 @@ public class DateBox extends JPanel {
         for (int i = 1; i < 32; i++) {
             dateBox[2].addItem(i);
         }
-        for (int i = 2000; i <= new JDate().getYear() + 1; i++) {
+        for (int i = 2011; i <= new JDate().getYear() + 1; i++) {
             dateBox[0].addItem(i);
         }
         add(new JLabel("Year"));
@@ -30,6 +30,18 @@ public class DateBox extends JPanel {
             add(dateBox[j]);
         }
     }
+
+    public final JComboBox getYearBox() {
+        return dateBox[0];
+    }
+
+//    public final JComboBox getMonthBox() {
+//        return dateBox[1];
+//    }
+//
+//    public final JComboBox getDayBox() {
+//        return dateBox[2];
+//    }
 
     public final int getYear() {
         return (int) dateBox[0].getSelectedItem();

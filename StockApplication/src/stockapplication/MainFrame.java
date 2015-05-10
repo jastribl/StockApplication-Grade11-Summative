@@ -34,9 +34,11 @@ public class MainFrame extends JFrame {
                     ENTERisDown = true;
                 } else if (key == KeyEvent.VK_DELETE) {
                     DELETEisDown = true;
-                } else if (key == KeyEvent.VK_N && ke.getModifiers() == KeyEvent.CTRL_MASK) {
+                } else if (key == KeyEvent.VK_N && ke.isControlDown()) {
                     CTRNisDown = true;
-                } else if (key == KeyEvent.VK_R && ke.getModifiers() == KeyEvent.CTRL_MASK) {
+                } else if (key == KeyEvent.VK_R && ke.isControlDown()) {
+                    CTRRisDown = true;
+                } else if (key == KeyEvent.VK_T && ke.isControlDown()) {
                     CTRRisDown = true;
                 }
             }
@@ -55,6 +57,9 @@ public class MainFrame extends JFrame {
                     CTRNisDown = false;
                 } else if (key == KeyEvent.VK_R && CTRRisDown) {
                     reportOptionsFrame.displayForQuickCapitalGainsReport("ALL", true);
+                    CTRRisDown = false;
+                } else if (key == KeyEvent.VK_T && CTRRisDown) {
+                    reportOptionsFrame.displayForTaxReport(true);
                     CTRRisDown = false;
                 }
             }
