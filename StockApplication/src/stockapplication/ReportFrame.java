@@ -1,6 +1,6 @@
 package stockapplication;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.print.PrinterException;
 import java.text.*;
@@ -15,59 +15,49 @@ import static stockapplication.StockApplication.warningWindow;
 
 public class ReportFrame extends JFrame {
 
-    private final JPanel quickReportPanel = new JPanel(), taxReportPanel = new JPanel();
-    private final DefaultTableModel quickReportModel = new DefaultTableModel(new String[]{"Stock", "Year", "Month", "Day", "Capital Gains / Losses"}, 0) {
+    private final JPanel quickPanel = new JPanel(), taxPanel = new JPanel();
+    private final DefaultTableModel quickModel = new DefaultTableModel(new String[]{"Stock", "Year", "Month", "Day", "Capital Gains / Losses"}, 0) {
 
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
         }
     };
-    private final DefaultTableModel taxReportModel = new DefaultTableModel(new String[]{"Number", "Name", "Bought", "Sold", "Proceeds", "ACB", "Outlays", "Gain / Loss"}, 0) {
+    private final DefaultTableModel taxModel = new DefaultTableModel(new String[]{"Number", "Name", "Bought", "Sold", "Proceeds", "ACB", "Outlays", "Gain / Loss"}, 0) {
 
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
         }
     };
-    public final JTable quickReportTable = new JTable(quickReportModel);
-    public final JTable taxReportTable = new JTable(taxReportModel);
+    public final JTable quickTable = new JTable(quickModel);
+    public final JTable taxTable = new JTable(taxModel);
 
     public ReportFrame() {
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-        taxReportTable.getColumnModel().getColumn(4).setCellRenderer(rightRenderer);
-        taxReportTable.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
-        taxReportTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
-        taxReportTable.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
+        taxTable.getColumnModel().getColumn(4).setCellRenderer(rightRenderer);
+        taxTable.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
+        taxTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
+        taxTable.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        taxReportTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-        taxReportTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
-        quickReportTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-        quickReportTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-        quickReportTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
-        taxReportTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-        quickReportTable.getTableHeader().setReorderingAllowed(false);
-        quickReportTable.getTableHeader().setResizingAllowed(false);
-        taxReportTable.getTableHeader().setReorderingAllowed(false);
-        taxReportTable.getTableHeader().setResizingAllowed(false);
-        int quickReportWidths[] = {93, 34, 42, 31, 145}, taxReportWidths[] = {60, 45, 80, 80, 75, 75, 55, 75};//{50, 40, 70, 70, 70, 70, 40, 70};
-        int quickReportTotalWidth = 0, taxReportTotalWidth = 0;
-        for (int i = 0; i < quickReportWidths.length; i++) {
-            quickReportTable.getColumnModel().getColumn(i).setMinWidth(quickReportWidths[i]);
-            quickReportTotalWidth += quickReportWidths[i];
-        }
-        for (int i = 0; i < taxReportWidths.length; i++) {
-            taxReportTable.getColumnModel().getColumn(i).setMinWidth(taxReportWidths[i]);
-            taxReportTotalWidth += taxReportWidths[i];
-        }
-        quickReportTable.setPreferredScrollableViewportSize(new Dimension(quickReportTotalWidth, 500));
-        taxReportTable.setPreferredScrollableViewportSize(new Dimension(taxReportTotalWidth, 500));
-        JScrollPane quickReportScrollPane = new JScrollPane(quickReportTable);
-        JScrollPane taxReportScrollPane = new JScrollPane(taxReportTable);
-        quickReportPanel.add(quickReportScrollPane);
-        taxReportPanel.add(taxReportScrollPane);
+        taxTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        taxTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        quickTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        quickTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        quickTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        taxTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        quickTable.getTableHeader().setReorderingAllowed(false);
+        quickTable.getTableHeader().setResizingAllowed(false);
+        taxTable.getTableHeader().setReorderingAllowed(false);
+        taxTable.getTableHeader().setResizingAllowed(false);
+        JScrollPane quickReportScrollPane = new JScrollPane(quickTable);
+        JScrollPane taxReportScrollPane = new JScrollPane(taxTable);
+        quickTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        taxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        quickPanel.add(quickReportScrollPane);
+        taxPanel.add(taxReportScrollPane);
         JMenu fileMenu = new JMenu("File");
         JMenuItem printMenuItem = new JMenuItem("Print");
         fileMenu.add(printMenuItem);
@@ -92,7 +82,7 @@ public class ReportFrame extends JFrame {
             }
         });
         KeyListener keyListener = new KeyListener() {
-            boolean ESCisDown = false;
+            boolean ESCisDown = false, CTRLIsDown = false;
 
             @Override
             public void keyTyped(KeyEvent ke) {
@@ -100,14 +90,18 @@ public class ReportFrame extends JFrame {
 
             @Override
             public void keyPressed(KeyEvent ke) {
-                if (ke.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                int key = ke.getKeyCode();
+                if (key == KeyEvent.VK_ESCAPE) {
                     ESCisDown = true;
+                } else if (key == KeyEvent.VK_P && ke.isControlDown()) {
+                    CTRLIsDown = true;
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent ke) {
-                if (ke.getKeyCode() == KeyEvent.VK_ESCAPE && ESCisDown) {
+                int key = ke.getKeyCode();
+                if (key == KeyEvent.VK_ESCAPE && ESCisDown) {
                     ESCisDown = false;
                     setVisible(false);
                     if (getTitle().substring(0, 1).equals(" ")) {
@@ -115,16 +109,28 @@ public class ReportFrame extends JFrame {
                     } else {
                         mainFrame.setVisible(true);
                     }
+                } else if (key == KeyEvent.VK_P) {
+                    CTRLIsDown = false;
+                    print();
                 }
             }
         };
-        quickReportTable.addKeyListener(keyListener);
-        taxReportTable.addKeyListener(keyListener);
+        quickTable.addKeyListener(keyListener);
+        taxTable.addKeyListener(keyListener);
         setResizable(false);
     }
 
     private void display(boolean option, String title) {
         setTitle((option ? " " : "") + title + " Stock Report");
+        int taxTableWidth = test(taxTable), taxTableHeight = taxTable.getRowHeight() * (taxTable.getRowCount()), quickTableWidth = test(quickTable), quickTableHeight = quickTable.getRowHeight() * (quickTable.getRowCount());
+        if (taxTableHeight > 500) {
+            taxTableHeight = 500;
+        }
+        if (quickTableHeight > 500) {
+            quickTableHeight = 500;
+        }
+        taxTable.setPreferredScrollableViewportSize(new Dimension(taxTableWidth, taxTableHeight));
+        quickTable.setPreferredScrollableViewportSize(new Dimension(quickTableWidth, quickTableHeight));
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
@@ -142,23 +148,23 @@ public class ReportFrame extends JFrame {
             }
             for (int i = 0; i < stocks.size(); i++) {
                 Stock stock = stocks.get(i);
-                quickReportModel.addRow(new Object[]{stock.getName()});
+                quickModel.addRow(new Object[]{stock.getName()});
                 for (int j = 0; j < stock.getEntries().size(); j++) {
                     Entry entry = stock.getEntries().get(j);
                     JDate tempDate = new JDate(entry.getYear(), entry.getMonth(), entry.getDay());
                     if (entry.getBS() == 'S' && (tempDate.compareTo(startDate) >= 0 && tempDate.compareTo(endDate) <= 0)) {
-                        quickReportModel.addRow(new Object[]{null, entry.getYear(), entry.getMonth(), entry.getDay(), money.format(entry.getCapitalGain())});
+                        quickModel.addRow(new Object[]{null, entry.getYear(), entry.getMonth(), entry.getDay(), money.format(entry.getCapitalGain())});
                         totals[i] += entry.getCapitalGain();
                     }
                 }
-                quickReportModel.addRow(new String[]{});
-                quickReportModel.addRow(new String[]{null, null, null, null, "Total: " + money.format(totals[i])});
-                quickReportModel.addRow(new String[]{});
+                quickModel.addRow(new String[]{});
+                quickModel.addRow(new String[]{null, null, null, null, "Total: " + money.format(totals[i])});
+                quickModel.addRow(new String[]{});
                 fullTotal += totals[i];
             }
-            quickReportModel.addRow(new String[]{});
-            quickReportModel.addRow(new String[]{null, null, null, null, "Final Total: " + money.format(fullTotal)});
-            quickReportModel.addRow(new String[]{});
+            quickModel.addRow(new String[]{});
+            quickModel.addRow(new String[]{null, null, null, null, "Final Total: " + money.format(fullTotal)});
+            quickModel.addRow(new String[]{});
             mainFrame.setVisible(false);
             display(false, "Full");
             return true;
@@ -175,18 +181,18 @@ public class ReportFrame extends JFrame {
             DecimalFormat money = new DecimalFormat("$#,##0.00;$-#,##0.00");
             Double total = 0.0;
             Stock stock = stocks.get(index);
-            quickReportModel.addRow(new Object[]{stock.getName()});
+            quickModel.addRow(new Object[]{stock.getName()});
             for (int j = 0; j < stock.getEntries().size(); j++) {
                 Entry entry = stock.getEntries().get(j);
                 JDate tempDate = new JDate(entry.getYear(), entry.getMonth(), entry.getDay());
                 if (entry.getBS() == 'S' && (tempDate.compareTo(startDate) >= 0 && tempDate.compareTo(endDate) <= 0)) {
-                    quickReportModel.addRow(new Object[]{null, entry.getYear(), entry.getMonth(), entry.getDay(), money.format(entry.getCapitalGain())});
+                    quickModel.addRow(new Object[]{null, entry.getYear(), entry.getMonth(), entry.getDay(), money.format(entry.getCapitalGain())});
                     total += entry.getCapitalGain();
                 }
             }
-            quickReportModel.addRow(new String[]{});
-            quickReportModel.addRow(new String[]{null, null, null, null, "Final Total: " + money.format(total)});
-            quickReportModel.addRow(new String[]{});
+            quickModel.addRow(new String[]{});
+            quickModel.addRow(new String[]{null, null, null, null, "Final Total: " + money.format(total)});
+            quickModel.addRow(new String[]{});
             stockFrame.setVisible(false);
             display(true, stockFrame.getTitle());
             return true;
@@ -197,9 +203,9 @@ public class ReportFrame extends JFrame {
     }
 
     public boolean quickReport(String stocksToDo, int index) {
-        this.remove(quickReportPanel);
-        this.remove(taxReportPanel);
-        add(quickReportPanel);
+        this.remove(quickPanel);
+        this.remove(taxPanel);
+        add(quickPanel);
         if (stocksToDo.equals("ALL")) {
             return quickReportAllStocks();
         } else {
@@ -208,9 +214,9 @@ public class ReportFrame extends JFrame {
     }
 
     public void taxReport() {
-        this.remove(quickReportPanel);
-        this.remove(taxReportPanel);
-        add(taxReportPanel);
+        this.remove(quickPanel);
+        this.remove(taxPanel);
+        add(taxPanel);
         JDate startDate = new JDate(reportOptionsFrame.getTaxYear(), 1, 1), endDate = new JDate(reportOptionsFrame.getTaxYear(), 12, 31);
         clearReportTable();
         DecimalFormat money = new DecimalFormat("$#,##0.00;$-#,##0.00");
@@ -247,7 +253,7 @@ public class ReportFrame extends JFrame {
                                 }
                             }
                         }
-                        taxReportModel.addRow(new Object[]{entry.getQuantity(), stock.getName(), dateBought, entry.getDate().toString(), money.format(entry.getQuantity() * entry.getPrice()), money.format(acb), money.format(entry.getCommission()), money.format(entry.getCapitalGain())});
+                        taxModel.addRow(new Object[]{entry.getQuantity(), stock.getName(), dateBought, entry.getDate().toString(), money.format(entry.getQuantity() * entry.getPrice()), money.format(acb), money.format(entry.getCommission()), money.format(entry.getCapitalGain())});
                         totalCapitalGains += entry.getCapitalGain();
 
                     }
@@ -275,9 +281,9 @@ public class ReportFrame extends JFrame {
                 }
             }
         }
-        taxReportModel.addRow(new String[]{});
-        taxReportModel.addRow(new String[]{null, null, null, null, null, null, "Total: ", money.format(totalCapitalGains)});
-        taxReportModel.addRow(new String[]{});
+        taxModel.addRow(new String[]{});
+        taxModel.addRow(new String[]{null, null, null, null, null, null, "Total: ", money.format(totalCapitalGains)});
+        taxModel.addRow(new String[]{});
         mainFrame.setVisible(false);
         display(false, "TAX");
     }
@@ -287,17 +293,33 @@ public class ReportFrame extends JFrame {
     }
 
     private void clearReportTable() {
-        quickReportModel.setRowCount(0);
-        taxReportModel.setRowCount(0);
+        quickModel.setRowCount(0);
+        taxModel.setRowCount(0);
     }
 
     public void print() {
         try {
             MessageFormat header = new MessageFormat("Tax Report");
             MessageFormat footer = new MessageFormat("Page - {0}");
-            taxReportTable.print(JTable.PrintMode.NORMAL,header,footer);
+            taxTable.print(JTable.PrintMode.NORMAL, header, footer);
         } catch (PrinterException ex) {
             warningWindow.displayWarning("Printing error.  Sorry for the inconvenience!");
         }
+    }
+
+    public int test(JTable table) {
+        int total = 0;
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            int width = 0;
+            for (int j = 0; j < table.getRowCount(); j++) {
+                TableCellRenderer renderer = table.getCellRenderer(j, i);
+                Component comp = table.prepareRenderer(renderer, j, i);
+                width = Math.max(comp.getPreferredSize().width, width);
+            }
+            width += 10;
+            table.getColumnModel().getColumn(i).setPreferredWidth(width);
+            total += width;
+        }
+        return total;
     }
 }
