@@ -18,8 +18,11 @@ public class PerfectTable extends JPanel {
         }
     };
     private final JTable table = new JTable(tableModel);
+    private final int minHeight, maxHeight;
 
-    public PerfectTable() {
+    public PerfectTable(int gMinHeight, int gMaxHeight) {
+        minHeight = gMinHeight;
+        maxHeight = gMaxHeight;
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setResizingAllowed(false);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -44,9 +47,13 @@ public class PerfectTable extends JPanel {
 
     public final void resize() {
         int tableHeight = table.getRowHeight() * (table.getRowCount());
-        if (tableHeight > 500) {
-            tableHeight = 500;
+        if (tableHeight > maxHeight) {
+            tableHeight = maxHeight;
         }
+        if (tableHeight < minHeight) {
+            tableHeight = minHeight;
+        }
+
         table.setPreferredScrollableViewportSize(new Dimension(setAndReturnTableWidths(), tableHeight));
     }
 
