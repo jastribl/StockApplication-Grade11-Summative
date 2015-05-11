@@ -23,7 +23,7 @@ public class ReportOptionsFrame {
         }
     }
 
-    public void displayForQuickCapitalGainsReport(String stocksToDo, boolean resetFields) {
+    public final void displayForQuickCapitalGainsReport(String stocksToDo, boolean resetFields) {
         reportOptionsPanel.removeAll();
         reportOptionsPanel.add(startDateBox);
         reportOptionsPanel.add(new JLabel("          to          "));
@@ -45,7 +45,7 @@ public class ReportOptionsFrame {
         }
     }
 
-    public void displayForTaxReport(boolean resetFields) {
+    public final void displayForTaxReport(boolean resetFields) {
         reportOptionsPanel.removeAll();
         reportOptionsPanel.add(yearBox);
         if (resetFields) {
@@ -60,11 +60,11 @@ public class ReportOptionsFrame {
         }
     }
 
-    public JDate getStartDate() {
+    public final JDate getStartDate() {
         return startDateBox.getDate();
     }
 
-    public JDate getEndDate() {
+    public final JDate getEndDate() {
         return endDateBox.getDate();
     }
 

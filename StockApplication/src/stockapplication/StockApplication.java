@@ -14,7 +14,7 @@ public class StockApplication {
     public static final ReportOptionsFrame reportOptionsFrame = new ReportOptionsFrame();
     public static final HelpFrame helpFrame = new HelpFrame();
 
-    public static void main(String[] args) {
+    public final static void main(String[] args) {
         stocks.readStocksFromFile();
         mainFrame.display();
     }

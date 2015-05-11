@@ -21,7 +21,7 @@ public class AddStockFrame {
         addStockPanel.add(addStockAdjCostBaseField);
     }
 
-    public void display(boolean reset) {
+    public final void display(boolean reset) {
         if (reset) {
             addStockField.setText("");
             addStockNumField.setValue(0);

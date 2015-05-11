@@ -112,7 +112,6 @@ public class StockFrame extends JFrame {
         entriesTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "Enter");
         entriesTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "Tab");
         entriesTable.addKeyListener(new KeyListener() {
-            boolean ENTERisDown = false, DELETEisDown = false, CTRNisDown = false, CTRRisDown = false, ESCisDown = false;
 
             @Override
             public void keyTyped(KeyEvent ke) {
@@ -122,43 +121,26 @@ public class StockFrame extends JFrame {
             public void keyPressed(KeyEvent ke) {
                 int key = ke.getKeyCode();
                 if (key == KeyEvent.VK_ENTER) {
-                    ENTERisDown = true;
+                    addEntryFrame.display("Edit / View Entry");
                 } else if (key == KeyEvent.VK_DELETE) {
-                    DELETEisDown = true;
+                    removeEntry();
                 } else if (key == KeyEvent.VK_N && ke.isControlDown()) {
-                    CTRNisDown = true;
+                    addEntryFrame.display("New Entry");
                 } else if (key == KeyEvent.VK_R && ke.isControlDown()) {
-                    CTRRisDown = true;
+                    reportOptionsFrame.displayForQuickCapitalGainsReport("ONE", true);
                 } else if (key == KeyEvent.VK_ESCAPE) {
-                    ESCisDown = true;
+                    setVisible(false);
+                    mainFrame.setVisible(true);
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent ke) {
-                int key = ke.getKeyCode();
-                if (key == KeyEvent.VK_ENTER && ENTERisDown) {
-                    ENTERisDown = false;
-                    addEntryFrame.display("Edit / View Entry");
-                } else if (key == KeyEvent.VK_DELETE && DELETEisDown) {
-                    DELETEisDown = false;
-                    removeEntry();
-                } else if (key == KeyEvent.VK_N && CTRNisDown) {
-                    CTRNisDown = false;
-                    addEntryFrame.display("New Entry");
-                } else if (key == KeyEvent.VK_R && CTRRisDown) {
-                    reportOptionsFrame.displayForQuickCapitalGainsReport("ONE", true);
-                    CTRRisDown = false;
-                } else if (key == KeyEvent.VK_ESCAPE && ESCisDown) {
-                    ESCisDown = false;
-                    setVisible(false);
-                    mainFrame.setVisible(true);
-                }
             }
         });
     }
 
-    public void display(int index) {
+    public final void display(int index) {
         currentStockIndex = index;
         if (currentStockIndex >= 0) {
             setTitle(stocks.get(currentStockIndex).getName());

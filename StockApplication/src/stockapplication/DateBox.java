@@ -34,7 +34,6 @@ public class DateBox extends JPanel {
     public final JComboBox getYearBox() {
         return dateBox[0];
     }
-
 //    public final JComboBox getMonthBox() {
 //        return dateBox[1];
 //    }

@@ -21,7 +21,6 @@ public class MainFrame extends JFrame {
         mainList.setPrototypeCellValue("                                                                     ");
         JScrollPane mainScrollPane = new JScrollPane(mainList);
         mainList.addKeyListener(new KeyListener() {
-            boolean ENTERisDown = false, DELETEisDown = false, CTRNisDown = false, CTRRisDown = false;
 
             @Override
             public void keyTyped(KeyEvent ke) {
@@ -31,37 +30,20 @@ public class MainFrame extends JFrame {
             public void keyPressed(KeyEvent ke) {
                 int key = ke.getKeyCode();
                 if (key == KeyEvent.VK_ENTER) {
-                    ENTERisDown = true;
+                    stockFrame.display(mainList.getSelectedIndex());
                 } else if (key == KeyEvent.VK_DELETE) {
-                    DELETEisDown = true;
+                    removeStock();
                 } else if (key == KeyEvent.VK_N && ke.isControlDown()) {
-                    CTRNisDown = true;
+                    addStockFrame.display(true);
                 } else if (key == KeyEvent.VK_R && ke.isControlDown()) {
-                    CTRRisDown = true;
+                    reportOptionsFrame.displayForQuickCapitalGainsReport("ALL", true);
                 } else if (key == KeyEvent.VK_T && ke.isControlDown()) {
-                    CTRRisDown = true;
+                    reportOptionsFrame.displayForTaxReport(true);
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent ke) {
-                int key = ke.getKeyCode();
-                if (key == KeyEvent.VK_ENTER && ENTERisDown) {
-                    stockFrame.display(mainList.getSelectedIndex());
-                    ENTERisDown = false;
-                } else if (key == KeyEvent.VK_DELETE && DELETEisDown) {
-                    removeStock();
-                    DELETEisDown = false;
-                } else if (key == KeyEvent.VK_N && CTRNisDown) {
-                    addStockFrame.display(true);
-                    CTRNisDown = false;
-                } else if (key == KeyEvent.VK_R && CTRRisDown) {
-                    reportOptionsFrame.displayForQuickCapitalGainsReport("ALL", true);
-                    CTRRisDown = false;
-                } else if (key == KeyEvent.VK_T && CTRRisDown) {
-                    reportOptionsFrame.displayForTaxReport(true);
-                    CTRRisDown = false;
-                }
             }
         });
         mainScrollPane.setWheelScrollingEnabled(true);
@@ -161,7 +143,7 @@ public class MainFrame extends JFrame {
         }
     }
 
-    public boolean addStock(String name, int totalStocks, double ACBTotal) {
+    public final boolean addStock(String name, int totalStocks, double ACBTotal) {
         if (!mainListModel.contains(name)) {
             if (!name.matches("")) {
                 stocks.addStock(new Stock(name, totalStocks, ACBTotal));
@@ -177,7 +159,7 @@ public class MainFrame extends JFrame {
         return false;
     }
 
-    public void removeStock() {
+    public final void removeStock() {
         if (mainList.getSelectedIndex() >= 0) {
             String name = mainList.getSelectedValue().toString();
             if (confirmWindow.displayConfirmation("Are you sure you would like to remove the stock \"" + name + "\"")) {

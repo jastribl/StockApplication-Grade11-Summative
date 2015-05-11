@@ -36,7 +36,6 @@ public class InputFrame {
             }
         });
         KeyListener keyListener = new KeyListener() {
-            boolean ENTERisDown = false, ESCisDown = false;
 
             @Override
             public void keyTyped(KeyEvent ke) {
@@ -46,24 +45,16 @@ public class InputFrame {
             public void keyPressed(KeyEvent ke) {
                 int key = ke.getKeyCode();
                 if (key == KeyEvent.VK_ENTER) {
-                    ENTERisDown = true;
+                    pane.setValue(JOptionPane.YES_OPTION);
+                    dialog.setVisible(false);
                 } else if (key == KeyEvent.VK_ESCAPE) {
-                    ESCisDown = true;
+                    pane.setValue(JOptionPane.CANCEL_OPTION);
+                    dialog.setVisible(false);
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent ke) {
-                int key = ke.getKeyCode();
-                if (key == KeyEvent.VK_ENTER && ENTERisDown) {
-                    ENTERisDown = false;
-                    pane.setValue(JOptionPane.YES_OPTION);
-                    dialog.setVisible(false);
-                } else if (key == KeyEvent.VK_ESCAPE && ESCisDown) {
-                    ESCisDown = false;
-                    pane.setValue(JOptionPane.CANCEL_OPTION);
-                    dialog.setVisible(false);
-                }
             }
         };
         for (Object inputField : inputFields) {

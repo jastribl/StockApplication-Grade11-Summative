@@ -10,7 +10,7 @@ public class WarningWindow {
         JOptionPane.showMessageDialog(null, body, "Warning!", JOptionPane.WARNING_MESSAGE);
     }
 
-    public void displayWarning(String body, int end) {
+    public final void displayWarning(String body, int end) {
         JOptionPane.showMessageDialog(null, body + ends[end], "Warning!", JOptionPane.WARNING_MESSAGE);
     }
 }

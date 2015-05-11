@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Stocks extends ArrayList<Stock> {
 
-    public void readStocksFromFile() {
+    public final void readStocksFromFile() {
         try (DataInputStream stockReader = new DataInputStream(new FileInputStream("stocks.StockFile"))) {
             int numberOfStocks = stockReader.readInt();
             for (int i = 0; i < numberOfStocks; i++) {
