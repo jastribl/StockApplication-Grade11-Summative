@@ -34,6 +34,10 @@ public class PerfectTable extends JPanel {
         return table;
     }
 
+    public final DefaultTableModel getModel() {
+        return tableModel;
+    }
+
     public final void setHeader(String[] headers) {
         resetCellRendering();
         tableModel.setColumnIdentifiers(headers);
