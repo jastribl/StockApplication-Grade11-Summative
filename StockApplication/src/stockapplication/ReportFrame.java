@@ -1,11 +1,11 @@
 package stockapplication;
 
 import java.awt.event.*;
-import static stockapplication.StockApplication.moneyFormat;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.*;
 import static stockapplication.StockApplication.mainFrame;
+import static stockapplication.StockApplication.moneyFormat;
 import static stockapplication.StockApplication.reportOptionsFrame;
 import static stockapplication.StockApplication.stockFrame;
 import static stockapplication.StockApplication.stocks;
@@ -15,7 +15,7 @@ public class ReportFrame extends JFrame {
 
     private final String[] quickReportHeadings = new String[]{"Stock", "Year", "Month", "Day", "Capital Gains / Losses"};
     private final String[] taxReportHeadings = new String[]{"Number", "Name", "Bought", "Sold", "Proceeds", "ACB", "Outlays", "Gain / Loss"};
-    private final PerfectTable reportTable = new PerfectTable();
+    private final PerfectTable reportTable = new PerfectTable(0, 400);
 
     public ReportFrame() {
         JMenu fileMenu = new JMenu("File");
