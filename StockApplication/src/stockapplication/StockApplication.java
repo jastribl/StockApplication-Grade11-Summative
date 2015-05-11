@@ -1,5 +1,7 @@
 package stockapplication;
 
+import java.text.DecimalFormat;
+
 public class StockApplication {
 
     public static final Stocks stocks = new Stocks();
@@ -13,6 +15,7 @@ public class StockApplication {
     public static final ReportFrame reportFrame = new ReportFrame();
     public static final ReportOptionsFrame reportOptionsFrame = new ReportOptionsFrame();
     public static final HelpFrame helpFrame = new HelpFrame();
+    public static final DecimalFormat moneyFormat = new DecimalFormat("$#,##0.00;$-#,##0.00");
 
     public final static void main(String[] args) {
         stocks.readStocksFromFile();

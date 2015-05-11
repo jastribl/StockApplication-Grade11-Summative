@@ -1,7 +1,7 @@
 package stockapplication;
 
 import java.awt.event.*;
-import java.text.*;
+import static stockapplication.StockApplication.moneyFormat;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -82,7 +82,6 @@ public class ReportFrame extends JFrame {
         if (datesGood()) {
             JDate startDate = reportOptionsFrame.getStartDate(), endDate = reportOptionsFrame.getEndDate();
             reportTable.clearTable();
-            DecimalFormat money = new DecimalFormat("$#,##0.00;$-#,##0.00");
             Double fullTotal = 0.0;
             Double totals[] = new Double[stocks.size()];
             for (int i = 0; i < totals.length; i++) {
@@ -96,17 +95,17 @@ public class ReportFrame extends JFrame {
                     Entry entry = stock.getEntries().get(j);
                     JDate tempDate = new JDate(entry.getYear(), entry.getMonth(), entry.getDay());
                     if (entry.getBS() == 'S' && (tempDate.compareTo(startDate) >= 0 && tempDate.compareTo(endDate) <= 0)) {
-                        data.add(new Object[]{null, entry.getYear(), entry.getMonth(), entry.getDay(), money.format(entry.getCapitalGain())});
+                        data.add(new Object[]{null, entry.getYear(), entry.getMonth(), entry.getDay(), moneyFormat.format(entry.getCapitalGain())});
                         totals[i] += entry.getCapitalGain();
                     }
                 }
                 data.add(new String[]{});
-                data.add(new String[]{null, null, null, null, "Total: " + money.format(totals[i])});
+                data.add(new String[]{null, null, null, null, "Total: " + moneyFormat.format(totals[i])});
                 data.add(new String[]{});
                 fullTotal += totals[i];
             }
             data.add(new String[]{});
-            data.add(new String[]{null, null, null, null, "Final Total: " + money.format(fullTotal)});
+            data.add(new String[]{null, null, null, null, "Final Total: " + moneyFormat.format(fullTotal)});
             data.add(new String[]{});
             mainFrame.setVisible(false);
             reportTable.fillData(data);
@@ -122,7 +121,6 @@ public class ReportFrame extends JFrame {
         if (datesGood()) {
             JDate startDate = reportOptionsFrame.getStartDate(), endDate = reportOptionsFrame.getEndDate();
             reportTable.clearTable();
-            DecimalFormat money = new DecimalFormat("$#,##0.00;$-#,##0.00");
             Double total = 0.0;
             Stock stock = stocks.get(index);
             ArrayList<Object[]> data = new ArrayList();
@@ -131,12 +129,12 @@ public class ReportFrame extends JFrame {
                 Entry entry = stock.getEntries().get(j);
                 JDate tempDate = new JDate(entry.getYear(), entry.getMonth(), entry.getDay());
                 if (entry.getBS() == 'S' && (tempDate.compareTo(startDate) >= 0 && tempDate.compareTo(endDate) <= 0)) {
-                    data.add(new Object[]{null, entry.getYear(), entry.getMonth(), entry.getDay(), money.format(entry.getCapitalGain())});
+                    data.add(new Object[]{null, entry.getYear(), entry.getMonth(), entry.getDay(), moneyFormat.format(entry.getCapitalGain())});
                     total += entry.getCapitalGain();
                 }
             }
             data.add(new String[]{});
-            data.add(new String[]{null, null, null, null, "Final Total: " + money.format(total)});
+            data.add(new String[]{null, null, null, null, "Final Total: " + moneyFormat.format(total)});
             data.add(new String[]{});
             stockFrame.setVisible(false);
             reportTable.fillData(data);
@@ -179,7 +177,6 @@ public class ReportFrame extends JFrame {
         reportTable.getTable().getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
         JDate startDate = new JDate(reportOptionsFrame.getTaxYear(), 1, 1), endDate = new JDate(reportOptionsFrame.getTaxYear(), 12, 31);
         reportTable.clearTable();
-        DecimalFormat money = new DecimalFormat("$#,##0.00;$-#,##0.00");
         Double totalCapitalGains = 0.0;
         ArrayList<Object[]> data = new ArrayList();
         for (Stock stock : stocks) {
@@ -214,7 +211,7 @@ public class ReportFrame extends JFrame {
                                 }
                             }
                         }
-                        data.add(new Object[]{entry.getQuantity(), stock.getName(), dateBought, entry.getDate().toString(), money.format(entry.getQuantity() * entry.getPrice()), money.format(acb), money.format(entry.getCommission()), money.format(entry.getCapitalGain())});
+                        data.add(new Object[]{entry.getQuantity(), stock.getName(), dateBought, entry.getDate().toString(), moneyFormat.format(entry.getQuantity() * entry.getPrice()), moneyFormat.format(acb), moneyFormat.format(entry.getCommission()), moneyFormat.format(entry.getCapitalGain())});
                         totalCapitalGains += entry.getCapitalGain();
 
                     }
@@ -243,7 +240,7 @@ public class ReportFrame extends JFrame {
             }
         }
         data.add(new String[]{});
-        data.add(new String[]{null, null, null, null, null, null, "Total: ", money.format(totalCapitalGains)});
+        data.add(new String[]{null, null, null, null, null, null, "Total: ", moneyFormat.format(totalCapitalGains)});
         data.add(new String[]{});
         mainFrame.setVisible(false);
         reportTable.fillData(data);
