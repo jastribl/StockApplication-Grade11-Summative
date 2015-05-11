@@ -23,7 +23,6 @@ public class Entry implements Comparable {
     public final Object[] getValues() {
         return values;
     }
-//
 //    public final Object[] getFormatedValues() {
 //        Object[] formatedValues = new Object[12];
 //        for (int i = 0; i < values.length; i++) {
@@ -35,6 +34,7 @@ public class Entry implements Comparable {
 //        }
 //        return formatedValues;
 //    }
+
     public final int getYear() {
         return (int) values[0];
     }
