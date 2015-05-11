@@ -23,7 +23,18 @@ public class Entry implements Comparable {
     public final Object[] getValues() {
         return values;
     }
-
+//
+//    public final Object[] getFormatedValues() {
+//        Object[] formatedValues = new Object[12];
+//        for (int i = 0; i < values.length; i++) {
+//            if (i >= 6 && i <= 11 && i != 8) {
+//                formatedValues[i] = moneyFormat.format(values[i]);
+//            } else {
+//                formatedValues[i] = values[i];
+//            }
+//        }
+//        return formatedValues;
+//    }
     public final int getYear() {
         return (int) values[0];
     }
